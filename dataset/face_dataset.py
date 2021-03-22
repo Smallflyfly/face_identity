@@ -14,19 +14,20 @@ from torchvision import transforms
 class FaceIdentityDataset(Dataset):
     def __init__(self):
         super(FaceIdentityDataset, self).__init__()
-        self.data_path = ''
+        self.data_path = './data/train'
         self.train_images = []
         self.labels = []
-        self.num_classes = []
-        self.image_size = (320, 320)
+        self.num_classes = 9131
+        self.image_size = (214, 214)
         self.transform = transforms.Compose(
             [
                 transforms.Resize(self.image_size),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
-                transforms.Normalize((), ())
+                transforms.Normalize([0.6068, 0.4517, 0.3800], [0.2492, 0.2173, 0.2082])
             ]
         )
+        self._process_data()
 
     def _process_data(self):
         folder_list = os.listdir(self.data_path)
@@ -42,7 +43,7 @@ class FaceIdentityDataset(Dataset):
     def __getitem__(self, index):
         image = self.train_images[index]
         label = self.labels[index]
-        im = Image.Open(image)
+        im = Image.open(image)
         im = self.transform(im)
         return im, label
 

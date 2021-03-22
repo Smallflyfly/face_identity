@@ -20,7 +20,7 @@ import torch.nn as nn
 
 def train(max_epoch, batch_size):
     dataset = FaceIdentityDataset()
-    train_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=1)
+    train_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=0)
     model = osnet_x1_0(num_classes=dataset.num_classes, pretrained=True, loss='softmax', use_gpu=True)
     model = model.cuda()
     model.train()
@@ -30,8 +30,8 @@ def train(max_epoch, batch_size):
     criterion = nn.CrossEntropyLoss()
     writer = SummaryWriter()
     for epoch in range(max_epoch):
-        train_tqdm = tqdm(train_loader, desc=str(epoch+1) + '/' + max_epoch(max_epoch))
-        for index, data in train_tqdm:
+        train_tqdm = tqdm(train_loader, desc=str(epoch+1) + '/' + str(max_epoch))
+        for index, data in enumerate(train_tqdm):
             im, label = data
             im = im.cuda()
             label = label.cuda()
@@ -51,8 +51,8 @@ def train(max_epoch, batch_size):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("人脸识别训练参数")
-    parser.add_argument("--epoch", default=100, type=int, help="train epochs")
-    parser.add_argument("--batch_size", default=16, type=int, help="train batch size")
+    parser.add_argument("--epoch", default=50, type=int, help="train epochs")
+    parser.add_argument("--batch_size", default=4, type=int, help="train batch size")
     args = parser.parse_args()
     max_epoch = args.epoch
     batch_size = args.batch_size
